@@ -17,16 +17,21 @@ export function LocationPicker({ latitude, longitude, onLocationChange }: Locati
     if (latitude && longitude) {
       setLat(latitude);
       setLng(longitude);
-      onLocationChange(latitude, longitude);
     } else {
       // Default to a central location (can be customized)
       const defaultLat = 28.6139;
       const defaultLng = 77.2090;
       setLat(defaultLat);
       setLng(defaultLng);
-      onLocationChange(defaultLat, defaultLng);
     }
-  }, [latitude, longitude, onLocationChange]);
+  }, [latitude, longitude]); // Only depend on the prop values
+
+  // Handle initial location change callback only once when no initial coordinates
+  useEffect(() => {
+    if (!latitude && !longitude) {
+      onLocationChange(lat, lng);
+    }
+  }, []); // Empty dependency array - only run once on mount
 
   const handleManualInput = () => {
     setIsManual(true);

@@ -33,22 +33,53 @@ export interface UserProfile {
   uid: string;
   name: string;
   email: string;
-  contactDetails?: string;
-  description?: string;
-  githubUrl?: string;
-  linkedinUrl?: string;
-  profileImageURL?: string;
-  techStack?: string;
-  role?: UserRole;
-  userType?: string; // backend may use 'user' or 'host'
+  contactDetails: string;
+  description: string;
+  githubUrl: string;
+  linkedinUrl: string;
+  profileImageURL: string;
+  role: "user" | "organizer" | string;
+  userType: "user" | "host" | string;
+  techStack?: string | string[] | null;
+  updatedAt?: any;                         // Firestore Timestamp
   isApproved?: boolean;
 }
 
 export interface RegistrationDoc {
   id: string;
   eventId: string;
-  userId: string;
-  registeredAt: string; // ISO
+  uid: string; // user's auth UID
+  "Name": string;
+  "College Email ID": string;
+  "Personal Email ID": string;
+  "Contact Number": string;
+  "Course": string;
+  "Department": string;
+  "Section": string;
+  "Specialization": string;
+  "Year of Study": string;
+  "FA Number": string;
+  "Faculty Advisor": string;
+  "Registration No.": string;
+  timestamp: Timestamp;
+}
+
+export interface Registration {
+  uid: string;                    // user's auth UID
+  eventId: string;                // link to events/{eventId}
+  name: string;
+  collegeEmail: string;
+  personalEmail: string;
+  contactNumber: string;
+  course: string;
+  department: string;
+  section: string;
+  specialization: string;
+  yearOfStudy: string;
+  faNumber: string;
+  facultyAdvisor: string;
+  qrCode?: string;                // base64 PNG string
+  timestamp: Timestamp;           // Firestore Timestamp
 }
 
 

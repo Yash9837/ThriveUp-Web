@@ -9,7 +9,7 @@ import { PosterUpload } from "@/components/PosterUpload";
 import { useCreateEvent } from "@/hooks/events";
 import { useAuth } from "@/hooks/useAuth";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { LocationPicker } from "@/components/LocationPicker";
 import { SpeakerManager } from "@/components/SpeakerManager";
 import { TagSelector } from "@/components/TagSelector";
@@ -38,6 +38,11 @@ export default function CreateEventPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [latitude, setLatitude] = useState<number | undefined>();
   const [longitude, setLongitude] = useState<number | undefined>();
+
+  const handleLocationChange = useCallback((lat: number, lng: number) => {
+    setLatitude(lat);
+    setLongitude(lng);
+  }, []);
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -254,10 +259,7 @@ export default function CreateEventPage() {
               <LocationPicker 
                 latitude={latitude} 
                 longitude={longitude} 
-                onLocationChange={(lat, lng) => {
-                  setLatitude(lat);
-                  setLongitude(lng);
-                }} 
+                onLocationChange={handleLocationChange} 
               />
             </div>
           </div>

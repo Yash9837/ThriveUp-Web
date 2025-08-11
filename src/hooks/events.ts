@@ -21,7 +21,7 @@ export function useEvent(eventId: string | undefined) {
 export function useRegister(eventId: string, userId?: string) {
   const client = useQueryClient();
   const mutation = useMutation({
-    mutationFn: () => registerForEvent({ eventId, userId: userId! }),
+    mutationFn: (registrationData: any) => registerForEvent(registrationData, eventId, userId!),
     onSuccess: () => {
       client.invalidateQueries({ queryKey: ["registrations", userId] });
     },
