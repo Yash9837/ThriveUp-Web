@@ -24,6 +24,8 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['lucide-react'],
     // Ensure proper client reference handling
     clientRouterFilter: true,
+    // Disable problematic features
+    serverComponentsExternalPackages: [],
   },
   // Ensure proper static generation
   trailingSlash: false,
@@ -31,6 +33,11 @@ const nextConfig: NextConfig = {
   // Ensure proper client reference handling
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
+  },
+  // Force proper build output
+  distDir: '.next',
+  generateBuildId: async () => {
+    return 'build-' + Date.now();
   },
 };
 
