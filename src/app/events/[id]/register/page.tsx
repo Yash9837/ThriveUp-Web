@@ -5,9 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useEvent } from "@/hooks/events";
 import { registerForEvent } from "@/services/registrations";
-import { serverTimestamp } from "firebase/firestore";
+import { ArrowLeft, Calendar, MapPin, User, Mail, Phone, GraduationCap, BookOpen, Users, Award, FileText } from "lucide-react";
+import Link from "next/link";
 import toast from "react-hot-toast";
-import { ArrowLeft, Calendar, MapPin, Clock, User, Mail, Phone, GraduationCap, BookOpen, Users, Award, FileText } from "lucide-react";
 import QRCode from "qrcode";
 
 interface RegistrationFormData {
@@ -111,14 +111,7 @@ export default function EventRegistrationPage() {
       });
       
       console.log("Generating QR code for data:", qrData);
-      const qrCodeDataURL = await QRCode.toDataURL(qrData, {
-        width: 300,
-        margin: 2,
-        color: {
-          dark: '#000000',
-          light: '#FFFFFF'
-        }
-      });
+      const qrCodeDataURL = await QRCode.toDataURL(qrData);
       
       console.log("QR code generated, updating state");
       setQrCodeData(qrCodeDataURL);
@@ -353,7 +346,7 @@ export default function EventRegistrationPage() {
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Event Not Found</h1>
-            <p className="text-gray-600">The event you're trying to register for doesn't exist.</p>
+            <p className="text-gray-600">The event you&apos;re trying to register for doesn&apos;t exist.</p>
           </div>
         </div>
       </div>
@@ -435,7 +428,7 @@ export default function EventRegistrationPage() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Clock className="w-5 h-5 text-[#FF5900]" />
+                <BookOpen className="w-5 h-5 text-[#FF5900]" />
                 <div>
                   <p className="text-sm text-gray-600">Time</p>
                   <p className="font-medium">{event.time}</p>

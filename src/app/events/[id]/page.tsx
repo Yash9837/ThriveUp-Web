@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useParams, useRouter } from "next/navigation";
 import { getProfile } from "@/services/users";
 import type { UserProfile } from "@/types/models";
-import { Calendar, Clock, MapPin, Users, User, Tag, CalendarDays } from "lucide-react";
+import { Calendar, MapPin, Users, User, Tag, CalendarDays } from "lucide-react";
 
 export default function EventDetailsPage() {
   const params = useParams<{ id: string }>();
@@ -84,7 +84,7 @@ export default function EventDetailsPage() {
         <main className="mx-auto max-w-6xl px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Event Not Found</h1>
-            <p className="text-gray-600">The event you're looking for doesn't exist or has been removed.</p>
+            <p className="text-gray-600">The event you&apos;re looking for doesn&apos;t exist or has been removed.</p>
           </div>
         </main>
       </div>
@@ -214,7 +214,9 @@ export default function EventDetailsPage() {
             <section className="bg-white rounded-2xl p-6 shadow-lg">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">About This Event</h2>
               <div className="prose prose-gray max-w-none">
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{event.description}</p>
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  {event.description || "No description available."}
+                </p>
               </div>
             </section>
 

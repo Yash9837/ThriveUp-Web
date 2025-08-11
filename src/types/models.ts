@@ -41,7 +41,7 @@ export interface UserProfile {
   role: "user" | "organizer" | string;
   userType: "user" | "host" | string;
   techStack?: string | string[] | null;
-  updatedAt?: any;                         // Firestore Timestamp
+  updatedAt?: Timestamp;                         // Firestore Timestamp
   isApproved?: boolean;
 }
 
@@ -80,6 +80,25 @@ export interface Registration {
   facultyAdvisor: string;
   qrCode?: string;                // base64 PNG string
   timestamp: Timestamp;           // Firestore Timestamp
+}
+
+export interface EventDoc {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  location: string;
+  locationDetails?: string;
+  category: string;
+  tags: string[];
+  imageName?: string;
+  attendanceCount: number;
+  organizerUid: string;
+  organizerName: string;
+  speakers: Speaker[];
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }
 
 

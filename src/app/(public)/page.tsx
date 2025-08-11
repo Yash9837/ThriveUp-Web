@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import { EventGrid } from "@/components/EventGrid";
 import { useEvents } from "@/hooks/events";
-import { Search, Calendar, MapPin, Users, ArrowRight, ChevronLeft, ChevronRight, Star, TrendingUp, Clock, Award } from "lucide-react";
+import { Search, Calendar, MapPin, Users, ArrowRight, ChevronLeft, ChevronRight, Star, TrendingUp, Award } from "lucide-react";
 import Link from "next/link";
 
 // Hero section images with website-related content
@@ -315,24 +315,24 @@ export default function HomePage() {
               <h4 className="text-lg font-semibold mb-6 text-white">Quick Links</h4>
               <ul className="space-y-3">
                 <li>
-                  <a href="/events" className="text-gray-300 hover:text-[#FF5900] transition-colors duration-300">
+                  <Link href="/events" className="text-gray-300 hover:text-[#FF5900] transition-colors duration-300">
                     Browse Events
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/organizer/new" className="text-gray-300 hover:text-[#FF5900] transition-colors duration-300">
+                  <Link href="/organizer/new" className="text-gray-300 hover:text-[#FF5900] transition-colors duration-300">
                     Create Event
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/profile" className="text-gray-300 hover:text-[#FF5900] transition-colors duration-300">
+                  <Link href="/profile" className="text-gray-300 hover:text-[#FF5900] transition-colors duration-300">
                     My Profile
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/organizer/events" className="text-gray-300 hover:text-[#FF5900] transition-colors duration-300">
+                  <Link href="/organizer/events" className="text-gray-300 hover:text-[#FF5900] transition-colors duration-300">
                     Organizer Dashboard
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -372,7 +372,7 @@ export default function HomePage() {
             <div className="text-center">
               <h3 className="text-2xl font-bold text-white mb-4">Stay Updated</h3>
               <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-                Get notified about the latest events, workshops, and opportunities. Never miss out on what's happening in your community.
+                Get notified about the latest events, workshops, and opportunities. Never miss out on what&apos;s happening in your community.
               </p>
               <div className="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
                 <input

@@ -35,7 +35,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,

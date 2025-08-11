@@ -4,6 +4,22 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { listPublicEvents, getEventById, createEvent, updateEvent, deleteEvent, listEventsByOrganizer, type CreateEventPayload } from "@/services/events";
 import { registerForEvent } from "@/services/registrations";
 
+// Import the type from registrations service
+interface RegistrationDataRaw {
+  "Name": string;
+  "College Email ID": string;
+  "Personal Email ID": string;
+  "Contact Number": string;
+  "Course": string;
+  "Department": string;
+  "Section": string;
+  "Specialization": string;
+  "Year of Study": string;
+  "FA Number": string;
+  "Faculty Advisor": string;
+  "Registration No.": string;
+}
+
 export function useEvents() {
   const query = useQuery({ queryKey: ["events"], queryFn: listPublicEvents });
   return { ...query, events: query.data ?? [] };
@@ -21,7 +37,7 @@ export function useEvent(eventId: string | undefined) {
 export function useRegister(eventId: string, userId?: string) {
   const client = useQueryClient();
   const mutation = useMutation({
-    mutationFn: (registrationData: any) => registerForEvent(registrationData, eventId, userId!),
+    mutationFn: (registrationData: RegistrationDataRaw) => registerForEvent(registrationData, eventId, userId!),
     onSuccess: () => {
       client.invalidateQueries({ queryKey: ["registrations", userId] });
     },

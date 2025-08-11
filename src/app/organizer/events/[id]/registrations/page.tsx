@@ -8,9 +8,10 @@ import { useEvent } from "@/hooks/events";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Users, Calendar, MapPin, Clock, Mail, Phone, GraduationCap, User, FileText, Eye, Download } from "lucide-react";
 import { format } from "date-fns";
+import { RegistrationDoc } from "@/types/models";
 
 interface RegistrationDetailModalProps {
-  registration: any;
+  registration: RegistrationDoc;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -160,10 +161,11 @@ export default function EventRegistrationsPage() {
   const eventId = params?.id as string;
   const { registrations, isLoading } = useEventRegistrations(eventId);
   const { event } = useEvent(eventId);
-  const [selectedRegistration, setSelectedRegistration] = useState<any>(null);
+  const [selectedRegistration, setSelectedRegistration] = useState<RegistrationDoc | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
 
-  const openModal = (registration: any) => {
+  const openModal = (registration: RegistrationDoc) => {
     setSelectedRegistration(registration);
     setIsModalOpen(true);
   };
@@ -174,39 +176,60 @@ export default function EventRegistrationsPage() {
   };
 
   const exportToCSV = () => {
-    if (registrations.length === 0) return;
+    if (!registrations || registrations.length === 0) return;
 
-    const headers = [
-      "Name", "College Email ID", "Personal Email ID", "Contact Number", 
-      "Course", "Department", "Section", "Specialization", "Year of Study", 
-      "FA Number", "Faculty Advisor", "Registration Date"
-    ];
+    setExportLoading(true);
+    
+    try {
+      const headers = [
+        "Name",
+        "College Email ID", 
+        "Personal Email ID",
+        "Contact Number",
+        "Course",
+        "Department",
+        "Section",
+        "Specialization",
+        "Year of Study",
+        "FA Number",
+        "Faculty Advisor",
+        "Registration No.",
+        "Registration Date"
+      ];
 
-    const csvContent = [
-      headers.join(","),
-      ...registrations.map(r => [
-        r["Name"],
-        r["College Email ID"],
-        r["Personal Email ID"],
-        r["Contact Number"],
-        r["Course"],
-        r["Department"],
-        r["Section"],
-        r["Specialization"] || "",
-        r["Year of Study"],
-        r["FA Number"],
-        r["Faculty Advisor"],
-        r.timestamp ? format(r.timestamp.toDate(), 'yyyy-MM-dd HH:mm:ss') : ""
-      ].join(","))
-    ].join("\n");
+      const csvData = registrations.map((registration: RegistrationDoc) => [
+        registration["Name"] || "",
+        registration["College Email ID"] || "",
+        registration["Personal Email ID"] || "",
+        registration["Contact Number"] || "",
+        registration["Course"] || "",
+        registration["Department"] || "",
+        registration["Section"] || "",
+        registration["Specialization"] || "",
+        registration["Year of Study"] || "",
+        registration["FA Number"] || "",
+        registration["Faculty Advisor"] || "",
+        registration["Registration No."] || "",
+        registration.timestamp ? format(registration.timestamp.toDate(), "MMM dd, yyyy") : ""
+      ]);
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${event?.title || 'Event'}_Registrations.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+      const csvContent = [
+        headers.join(","),
+        ...csvData.map(row => row.join(","))
+      ].join("\n");
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${event?.title || 'Event'}_Registrations.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error exporting to CSV:", error);
+    } finally {
+      setExportLoading(false);
+    }
   };
 
   return (
@@ -230,7 +253,7 @@ export default function EventRegistrationsPage() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={exportToCSV}
-                    disabled={registrations.length === 0}
+                    disabled={registrations.length === 0 || exportLoading}
                     className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Download className="w-4 h-4" />
@@ -377,11 +400,13 @@ export default function EventRegistrationsPage() {
       </main>
 
       {/* Registration Detail Modal */}
-      <RegistrationDetailModal
-        registration={selectedRegistration}
-        isOpen={isModalOpen}
-        onClose={closeModal}
-      />
+      {selectedRegistration && (
+        <RegistrationDetailModal
+          registration={selectedRegistration}
+          isOpen={isModalOpen}
+          onClose={closeModal}
+        />
+      )}
     </RoleGate>
   );
 }

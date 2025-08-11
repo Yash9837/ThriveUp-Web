@@ -1,20 +1,19 @@
 "use client";
 
-import { onAuthStateChanged, signOut, signInWithPopup, signInWithEmailAndPassword, type User } from "firebase/auth";
+import { useState, useEffect } from "react";
+import { onAuthStateChanged, signOut, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirebaseAuth, googleProvider } from "@/lib/firebase";
-import { useEffect, useState, useMemo } from "react";
 import { getProfile } from "@/services/users";
 import type { UserProfile, UserRole } from "@/types/models";
 import toast from "react-hot-toast";
 
 export function useAuth() {
-  const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
+  const [firebaseUser, setFirebaseUser] = useState<import("firebase/auth").User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const auth = getFirebaseAuth();
-    const unsub = onAuthStateChanged(auth, async (u) => {
+    const unsub = onAuthStateChanged(getFirebaseAuth(), async (u) => {
       console.log("=== Auth state changed ===");
       console.log("Previous user:", firebaseUser?.uid);
       console.log("New user:", u?.uid);
@@ -89,7 +88,7 @@ export function useAuth() {
       console.log("Final state:", { user: u?.uid, profile: profile, loading: false });
     });
     return () => unsub();
-  }, []); // Remove profile dependency to prevent infinite loops
+  }, [firebaseUser?.uid, loading]); // Add dependencies to prevent warning
 
   // Debug profile state changes
   useEffect(() => {
@@ -154,58 +153,33 @@ export function useAuth() {
   };
 
   const loginWithGoogle = async () => {
-    const auth = getFirebaseAuth();
     try {
-      await signInWithPopup(auth, googleProvider);
+      await signInWithPopup(getFirebaseAuth(), googleProvider);
+      toast.success("Successfully signed in with Google!");
     } catch (error) {
-      console.error("Google login error:", error);
-      toast.error("Google login failed. Please try again.");
-      throw error;
+      console.error("Google sign-in error:", error);
+      toast.error("Failed to sign in with Google");
     }
   };
 
   const loginWithEmail = async (email: string, password: string) => {
-    const auth = getFirebaseAuth();
     try {
       console.log("Attempting login with email:", email);
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      console.log("Login successful:", result.user.uid);
-    } catch (error: unknown) {
-      console.error("Email login error:", error);
-      
-      // Handle specific Firebase auth errors
-      if (error && typeof error === 'object' && 'code' in error) {
-        const firebaseError = error as { code: string };
-        if (firebaseError.code === 'auth/user-not-found') {
-          toast.error("No account found with this email address");
-        } else if (firebaseError.code === 'auth/wrong-password') {
-          toast.error("Incorrect password");
-        } else if (firebaseError.code === 'auth/invalid-email') {
-          toast.error("Invalid email address");
-        } else if (firebaseError.code === 'auth/too-many-requests') {
-          toast.error("Too many failed attempts. Please try again later");
-        } else {
-          toast.error("Login failed. Please check your credentials and try again");
-        }
-      } else {
-        toast.error("Login failed. Please check your credentials and try again");
-      }
-      
-      throw error;
+      await signInWithEmailAndPassword(getFirebaseAuth(), email, password);
+      toast.success("Successfully signed in!");
+    } catch (error) {
+      console.error("Email sign-in error:", error);
+      toast.error("Failed to sign in. Please check your credentials.");
     }
   };
 
   const logout = async () => {
-    const auth = getFirebaseAuth();
     try {
-      await signOut(auth);
-      // Clear profile state immediately
-      setProfile(null);
-      setFirebaseUser(null);
-      console.log("Logout successful, user state cleared");
+      await signOut(getFirebaseAuth());
+      toast.success("Successfully signed out!");
     } catch (error) {
-      console.error("Logout error:", error);
-      toast.error("Logout failed. Please try again.");
+      console.error("Sign-out error:", error);
+      toast.error("Failed to sign out");
     }
   };
 

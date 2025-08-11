@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { getProfile } from "@/services/users";
 import toast from "react-hot-toast";
-import type { UserProfile } from "@/types/models";
 
-export default function LoginPage() {
+// Separate component that uses useSearchParams
+function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -233,7 +233,7 @@ export default function LoginPage() {
 
           <div className="mt-6 text-center">
             <p className="text-gray-600">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <a href="/register" className="text-[#FF5900] hover:underline font-medium">
                 Sign up
               </a>
@@ -242,6 +242,22 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Main page component with Suspense boundary
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#FFD1A1] to-white">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-[#FF5900] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
 
