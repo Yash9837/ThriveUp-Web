@@ -2,16 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  experimental: {
-    // Enable experimental features that might help with Vercel deployment
-  },
-  serverExternalPackages: [],
-
-  // Disable image optimization if causing issues
-  images: {
-    unoptimized: false,
-  },
-  // Ensure proper webpack configuration
+  // Ensure proper webpack configuration for Vercel
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -22,6 +13,24 @@ const nextConfig: NextConfig = {
       };
     }
     return config;
+  },
+  // Optimize for Vercel deployment
+  experimental: {
+    // Disable features that might cause issues
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+    // Optimize client components
+    optimizePackageImports: ['lucide-react'],
+    // Ensure proper client reference handling
+    clientRouterFilter: true,
+  },
+  // Ensure proper static generation
+  trailingSlash: false,
+  poweredByHeader: false,
+  // Ensure proper client reference handling
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
   },
 };
 
