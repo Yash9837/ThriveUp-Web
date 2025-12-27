@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  // Empty turbopack config to silence warning in Next.js 16+
+  turbopack: {},
   // Ensure proper webpack configuration for Vercel
   webpack: (config, { isServer }) => {
     if (!isServer) {
