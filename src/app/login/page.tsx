@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { getProfile } from "@/services/users";
 import toast from "react-hot-toast";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 // Separate component that uses useSearchParams
 function LoginForm() {
@@ -185,6 +187,16 @@ function LoginForm() {
       <div className="absolute top-[20%] right-[-10%] w-[500px] h-[500px] bg-purple-900/20 rounded-full blur-[120px] mix-blend-screen animate-blob animation-delay-2000" />
       <div className="absolute bottom-[-20%] left-[20%] w-[600px] h-[600px] bg-white/5 rounded-full blur-[120px] mix-blend-overlay animate-blob animation-delay-4000" />
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
+
+      {/* Back Button */}
+      <div className="absolute top-8 left-8 z-20">
+        <Link href="/events" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors font-medium group text-sm">
+          <div className="p-2 rounded-full bg-white/5 border border-white/10 group-hover:bg-white/10 transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+          </div>
+          Back to Explore
+        </Link>
+      </div>
 
       <div className="w-full max-w-md relative z-10">
         <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl p-8 md:p-10 animate-fade-in-up">
