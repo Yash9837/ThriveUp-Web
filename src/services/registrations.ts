@@ -1,6 +1,6 @@
 "use client";
 
-import { addDoc, collection, getDocs, query, serverTimestamp, where, doc, getDoc } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, serverTimestamp, where, doc, getDoc, limit, getCountFromServer } from "firebase/firestore";
 import { getDb } from "@/lib/firebase";
 import type { RegistrationDoc, Registration } from "@/types/models";
 
@@ -24,10 +24,10 @@ interface RegistrationDataRaw {
 
 export async function registerForEvent(registrationData: RegistrationDataRaw, eventId: string, uid: string): Promise<string | null> {
   console.log("registerForEvent called with:", { registrationData, eventId, uid });
-  
+
   const db = getDb();
   console.log("Database instance obtained");
-  
+
   // Check if user is already registered for this event
   const q = query(
     collection(db, COLLECTION),
@@ -35,10 +35,10 @@ export async function registerForEvent(registrationData: RegistrationDataRaw, ev
     where("uid", "==", uid)
   );
   console.log("Query created for existing registration check");
-  
+
   const existing = await getDocs(q);
   console.log("Existing registrations found:", existing.size);
-  
+
   if (!existing.empty) {
     console.log("User already registered, returning existing ID:", existing.docs[0]!.id);
     return existing.docs[0]!.id;
@@ -60,7 +60,7 @@ export async function registerForEvent(registrationData: RegistrationDataRaw, ev
       eventId,
       timestamp: serverTimestamp(),
     });
-    
+
     console.log("Document created successfully with ID:", docRef.id);
     return docRef.id;
   } catch (error) {
@@ -90,4 +90,30 @@ export async function getRegistration(registrationId: string): Promise<Registrat
   return snap.exists() ? (snap.data() as Registration) : null;
 }
 
+export async function checkUserRegistration(userId: string, eventId: string): Promise<RegistrationDoc | null> {
+  const db = getDb();
+  const q = query(
+    collection(db, COLLECTION),
+    where("uid", "==", userId),
+    where("eventId", "==", eventId),
+    limit(1)
+  );
 
+  const snapshot = await getDocs(q);
+
+  if (snapshot.empty) {
+    return null;
+  }
+
+  const doc = snapshot.docs[0];
+  return { id: doc.id, ...(doc.data() as Record<string, unknown>) } as RegistrationDoc;
+}
+
+
+
+export async function getRegistrationCount(eventId: string): Promise<number> {
+  const db = getDb();
+  const q = query(collection(db, COLLECTION), where("eventId", "==", eventId));
+  const snapshot = await getCountFromServer(q);
+  return snapshot.data().count;
+}

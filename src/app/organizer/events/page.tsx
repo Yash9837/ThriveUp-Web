@@ -1,137 +1,135 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
-import { RoleGate } from "@/components/AuthGate";
+import { useEffect, useState } from "react";
+import { useMyEvents } from "@/hooks/events";
 import { useAuth } from "@/hooks/useAuth";
-import { useDeleteEvent, useMyEvents } from "@/hooks/events";
+import Navbar from "@/components/Navbar";
+import { AuthGate } from "@/components/AuthGate";
 import Link from "next/link";
-import { Calendar, MapPin, Clock, Users, Plus, Eye, Users as UsersIcon, Trash2 } from "lucide-react";
+import { Calendar, Users, Ticket, BarChart3, Plus } from "lucide-react";
+import { OrganizerEventCard } from "@/components/OrganizerEventCard";
+import { getRegistrationCount } from "@/services/registrations";
 
 export default function OrganizerEventsPage() {
-  const { profile } = useAuth();
-  const { events, isLoading } = useMyEvents(profile?.uid);
-  const del = useDeleteEvent();
+  const { user } = useAuth();
+  const { events, isLoading } = useMyEvents(user?.uid);
+  const [totalAttendees, setTotalAttendees] = useState(0);
 
-  // Debug logging
-  console.log("OrganizerEventsPage - Profile:", profile);
-  console.log("OrganizerEventsPage - Profile UID:", profile?.uid);
-  console.log("OrganizerEventsPage - Events:", events);
-  console.log("OrganizerEventsPage - IsLoading:", isLoading);
+  // Calculate Aggregated Stats
+  const totalEvents = events.length;
+
+  useEffect(() => {
+    async function calculateTotal() {
+      if (!events.length) {
+        setTotalAttendees(0);
+        return;
+      }
+      try {
+        const counts = await Promise.all(events.map(e => getRegistrationCount(e.eventId)));
+        const sum = counts.reduce((a, b) => a + b, 0);
+        setTotalAttendees(sum);
+      } catch (error) {
+        console.error("Failed to calculate total attendees:", error);
+      }
+    }
+    calculateTotal();
+  }, [events]);
 
   return (
-    <RoleGate role="organizer">
-      <Navbar />
-      <main className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">My Active Events</h1>
-                <p className="text-gray-600 mt-2">Manage and monitor your events</p>
+    <AuthGate>
+      <div className="min-h-screen bg-[#0E0E10] text-zinc-100 font-sans selection:bg-brand/30 selection:text-brand-100">
+        <Navbar />
+
+        {/* Subtle Background Texture */}
+        <div className="fixed inset-0 pointer-events-none opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
+        <div className="fixed top-0 left-0 right-0 h-96 bg-gradient-to-b from-brand/5 to-transparent pointer-events-none" />
+
+        <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
+
+          {/* Header & Actions */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-2">
+                Organizer Dashboard
+              </h1>
+              <p className="text-zinc-400">Manage your events and track performance.</p>
+            </div>
+            <Link
+              href="/organizer/create"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-brand text-white font-bold rounded-lg hover:bg-orange-600 transition-all shadow-lg shadow-brand/20 group"
+            >
+              <Plus className="w-5 h-5" /> Create Event
+            </Link>
+          </div>
+
+          {/* Stats Overview */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
+            <div className="bg-zinc-900/50 border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-colors">
+              <div className="absolute top-0 right-0 p-32 bg-brand/5 rounded-full blur-3xl -mr-16 -mt-16 transition-opacity opacity-50 group-hover:opacity-100" />
+              <div className="relative z-10">
+                <p className="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-2">Total Events</p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-bold text-white">{totalEvents}</span>
+                  <Ticket className="w-5 h-5 text-brand" />
+                </div>
               </div>
-              <Link
-                href="/organizer/new"
-                className="flex items-center gap-2 px-6 py-3 bg-[#FF5900] text-white font-semibold rounded-lg hover:bg-[#E54D00] transition-colors"
-              >
-                <Plus className="w-5 h-5" />
-                Create New Event
-              </Link>
+            </div>
+
+            <div className="bg-zinc-900/50 border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-colors">
+              <div className="absolute top-0 right-0 p-32 bg-blue-500/5 rounded-full blur-3xl -mr-16 -mt-16 transition-opacity opacity-50 group-hover:opacity-100" />
+              <div className="relative z-10">
+                <p className="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-2">Total Attendees</p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-bold text-white">{totalAttendees}</span>
+                  <Users className="w-5 h-5 text-blue-500" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-zinc-900/50 border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-colors">
+              <div className="absolute top-0 right-0 p-32 bg-green-500/5 rounded-full blur-3xl -mr-16 -mt-16 transition-opacity opacity-50 group-hover:opacity-100" />
+              <div className="relative z-10">
+                <p className="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-2">Avg. Engagement</p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-bold text-white">--</span>
+                  <BarChart3 className="w-5 h-5 text-green-500" />
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Events List */}
-          {isLoading ? (
-            <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-              <div className="w-16 h-16 border-4 border-[#FF5900] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading your events...</p>
-            </div>
-          ) : events.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-              <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No events yet</h3>
-              <p className="text-gray-600 mb-6">Create your first event to get started!</p>
-              <Link
-                href="/organizer/new"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#FF5900] text-white font-semibold rounded-lg hover:bg-[#E54D00] transition-colors"
-              >
-                <Plus className="w-5 h-5" />
-                Create Your First Event
-              </Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              {events.map((event) => (
-                <div key={event.eventId} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                  {/* Event Image */}
-                  <div className="h-48 bg-gradient-to-br from-[#FF5900] to-[#E54D00] flex items-center justify-center">
-                    {event.posterUrl ? (
-                      <img 
-                        src={event.posterUrl} 
-                        alt={event.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <Calendar className="w-16 h-16 text-white opacity-80" />
-                    )}
-                  </div>
-                  
-                  {/* Event Content */}
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">{event.title}</h3>
-                    
-                    <div className="space-y-3 mb-6">
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <Calendar className="w-4 h-4 text-[#FF5900]" />
-                        <span className="text-sm">{event.date}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <Clock className="w-4 h-4 text-[#FF5900]" />
-                        <span className="text-sm">{event.time}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <MapPin className="w-4 h-4 text-[#FF5900]" />
-                        <span className="text-sm">{event.location}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <Users className="w-4 h-4 text-[#FF5900]" />
-                        <span className="text-sm">{event.attendanceCount} attendees</span>
-                      </div>
-                    </div>
+          {/* Events Grid */}
+          <section>
+            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              Your Events <span className="opacity-50 text-sm font-normal">({totalEvents})</span>
+            </h2>
 
-                    {/* Actions */}
-                    <div className="flex items-center gap-2">
-                      <Link
-                        href={`/events/${event.eventId}`}
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-[#FF5900] text-[#FF5900] rounded-lg hover:bg-[#FF5900] hover:text-white transition-colors"
-                      >
-                        <Eye className="w-4 h-4" />
-                        View
-                      </Link>
-                      <Link
-                        href={`/organizer/events/${event.eventId}/registrations`}
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#FF5900] text-white rounded-lg hover:bg-[#E54D00] transition-colors"
-                      >
-                        <UsersIcon className="w-4 h-4" />
-                        Registrations
-                      </Link>
-                      <button
-                        onClick={() => del.mutate(event.eventId)}
-                        disabled={del.isPending}
-                        className="px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-colors disabled:opacity-50"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
+            {isLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="w-8 h-8 border-2 border-zinc-800 border-t-brand rounded-full animate-spin"></div>
+              </div>
+            ) : events.length === 0 ? (
+              <div className="bg-zinc-900/30 border border-dashed border-zinc-800 rounded-2xl p-12 text-center">
+                <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Calendar className="w-8 h-8 text-zinc-600" />
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </main>
-    </RoleGate>
+                <h3 className="text-white font-bold text-lg mb-2">No events yet</h3>
+                <p className="text-zinc-500 mb-6">Create your first event to start tracking registrations.</p>
+                <Link href="/organizer/create" className="text-brand font-medium hover:underline">
+                  Create Event
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {events.map((event) => (
+                  <OrganizerEventCard key={event.eventId} event={event} />
+                ))}
+              </div>
+            )}
+          </section>
+
+        </main>
+      </div>
+    </AuthGate>
   );
 }
-
-

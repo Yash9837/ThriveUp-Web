@@ -25,8 +25,8 @@ const nextConfig: NextConfig = {
     // Ensure proper client reference handling
     clientRouterFilter: true,
     // Disable problematic features
-    serverComponentsExternalPackages: [],
   },
+  serverExternalPackages: [],
   // Ensure proper static generation
   trailingSlash: false,
   poweredByHeader: false,

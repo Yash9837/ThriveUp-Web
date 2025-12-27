@@ -27,6 +27,7 @@ export interface EventModel {
   speakers: Speaker[];          // array of maps in Firestore
   status?: string;              // "accepted" | "accepted"
   tags: string[];               // ["Workshops", "Conferences", ...]
+  isRegistrationOpen?: boolean; // Controls if registration is active
 }
 
 export interface UserProfile {
@@ -41,6 +42,7 @@ export interface UserProfile {
   role: "user" | "organizer" | string;
   userType: "user" | "host" | string;
   techStack?: string | string[] | null;
+  college?: string;
   updatedAt?: Timestamp;                         // Firestore Timestamp
   isApproved?: boolean;
 }

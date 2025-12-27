@@ -5,8 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useEvent } from "@/hooks/events";
 import { registerForEvent } from "@/services/registrations";
-import { ArrowLeft, Calendar, MapPin, User, Mail, Phone, GraduationCap, BookOpen, Users, Award, FileText } from "lucide-react";
-import Link from "next/link";
+import { ArrowLeft, Calendar, MapPin, User, Mail, GraduationCap, BookOpen, Users, FileText } from "lucide-react";
 import toast from "react-hot-toast";
 import QRCode from "qrcode";
 
@@ -39,7 +38,6 @@ export default function EventRegistrationPage() {
   const [showQRCode, setShowQRCode] = useState(false);
   const [qrCodeData, setQrCodeData] = useState<string>("");
   const [authTimeout, setAuthTimeout] = useState(false);
-  const hasRedirectedRef = useRef(false); // Use ref instead of state to prevent re-renders
 
   // Move all useState hooks to the top, before any conditional returns
   const [formData, setFormData] = useState<RegistrationFormData>({
@@ -58,7 +56,7 @@ export default function EventRegistrationPage() {
 
   // Use ref to access current form data in callbacks
   const formDataRef = useRef(formData);
-  
+
   // Update ref when formData changes
   useEffect(() => {
     formDataRef.current = formData;
@@ -85,7 +83,7 @@ export default function EventRegistrationPage() {
         console.log("Authentication timeout - user exists but profile not loaded");
         setAuthTimeout(true);
       }, 5000); // 5 second timeout
-      
+
       return () => clearTimeout(timer);
     }
   }, [user, profile, loading]);
@@ -109,10 +107,10 @@ export default function EventRegistrationPage() {
         userName: formDataRef.current["Name"],
         timestamp: new Date().toISOString()
       });
-      
+
       console.log("Generating QR code for data:", qrData);
       const qrCodeDataURL = await QRCode.toDataURL(qrData);
-      
+
       console.log("QR code generated, updating state");
       setQrCodeData(qrCodeDataURL);
       setShowQRCode(true);
@@ -125,7 +123,7 @@ export default function EventRegistrationPage() {
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user || !event) {
       console.error("Missing user or event:", { user: !!user, event: !!event });
       return;
@@ -146,9 +144,9 @@ export default function EventRegistrationPage() {
     console.log("Form data:", formDataRef.current);
     console.log("User:", user.uid);
     console.log("Event ID:", eventId);
-    
+
     setIsSubmitting(true);
-    
+
     try {
       // Transform form data to match database schema with spaces in keys
       const transformedData = {
@@ -169,11 +167,11 @@ export default function EventRegistrationPage() {
       console.log("Calling registerForEvent with data:", transformedData);
       console.log("Data type:", typeof transformedData);
       console.log("Data keys:", Object.keys(transformedData));
-      
+
       const registrationId = await registerForEvent(transformedData, eventId, user.uid);
-      
+
       console.log("registerForEvent returned:", registrationId);
-      
+
       if (registrationId) {
         console.log("Registration successful, generating QR code");
         toast.success("Registration successful!");
@@ -279,25 +277,25 @@ export default function EventRegistrationPage() {
       hasUser: !!user,
       hasProfile: !!profile
     });
-    
+
     // If we have a user but no profile and we're not loading, this might be a profile loading issue
     if (user && !profile && !loading) {
       console.log("User authenticated but profile not loaded - this might be a profile loading issue");
     }
-    
+
     let statusMessage = "Loading...";
     if (loading) statusMessage = "Loading authentication...";
     else if (isLoading) statusMessage = "Loading event...";
     else if (!user) statusMessage = "Checking authentication...";
     else if (!profile) statusMessage = "Loading user profile...";
-    
+
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-[#FF5900] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-gray-600 text-lg mb-4">{statusMessage}</p>
-            
+
             {/* Show debug info in development */}
             {process.env.NODE_ENV === 'development' && (
               <div className="bg-gray-100 p-4 rounded-lg text-left text-sm max-w-md mx-auto">
@@ -307,7 +305,7 @@ export default function EventRegistrationPage() {
                 <div>User: {user ? `Yes (${user.email})` : 'No'}</div>
                 <div>Profile: {profile ? `Yes (${profile.role})` : 'No'}</div>
                 <div>User ID: {user?.uid || 'None'}</div>
-                
+
                 {/* Manual refresh button if user exists but profile doesn't */}
                 {user && !profile && !loading && (
                   <button
@@ -339,7 +337,7 @@ export default function EventRegistrationPage() {
       </div>
     );
   }
-  
+
   if (!event) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -367,7 +365,7 @@ export default function EventRegistrationPage() {
                 Back to Form
               </button>
             </div>
-            
+
             <div className="mb-6">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Registration Successful!</h1>
               <p className="text-gray-600">You have been registered for {event.title}</p>
@@ -416,7 +414,7 @@ export default function EventRegistrationPage() {
             <ArrowLeft className="w-5 h-5" />
             Back to Event
           </button>
-          
+
           <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Event Registration</h1>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -448,7 +446,7 @@ export default function EventRegistrationPage() {
         {/* Registration Form */}
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Registration Form</h2>
-          
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Personal Information */}
             <div className="space-y-4">
@@ -456,7 +454,7 @@ export default function EventRegistrationPage() {
                 <User className="w-5 h-5 text-[#FF5900]" />
                 Personal Information
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -473,7 +471,7 @@ export default function EventRegistrationPage() {
                     placeholder="Enter your full name"
                   />
                 </div>
-                
+
                 <div>
                   <label htmlFor="contactNumber" className="block text-sm font-medium text-gray-700 mb-2">
                     Contact Number *
@@ -498,7 +496,7 @@ export default function EventRegistrationPage() {
                 <Mail className="w-5 h-5 text-[#FF5900]" />
                 Email Information
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="collegeEmail" className="block text-sm font-medium text-gray-700 mb-2">
@@ -515,7 +513,7 @@ export default function EventRegistrationPage() {
                     placeholder="Enter your college email"
                   />
                 </div>
-                
+
                 <div>
                   <label htmlFor="personalEmail" className="block text-sm font-medium text-gray-700 mb-2">
                     Personal Email
@@ -539,7 +537,7 @@ export default function EventRegistrationPage() {
                 <GraduationCap className="w-5 h-5 text-[#FF5900]" />
                 Academic Information
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="course" className="block text-sm font-medium text-gray-700 mb-2">
@@ -559,7 +557,7 @@ export default function EventRegistrationPage() {
                     ))}
                   </select>
                 </div>
-                
+
                 <div>
                   <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-2">
                     Department *
@@ -578,7 +576,7 @@ export default function EventRegistrationPage() {
                     ))}
                   </select>
                 </div>
-                
+
                 <div>
                   <label htmlFor="section" className="block text-sm font-medium text-gray-700 mb-2">
                     Section *
@@ -597,7 +595,7 @@ export default function EventRegistrationPage() {
                     ))}
                   </select>
                 </div>
-                
+
                 <div>
                   <label htmlFor="yearOfStudy" className="block text-sm font-medium text-gray-700 mb-2">
                     Year of Study *
@@ -617,7 +615,7 @@ export default function EventRegistrationPage() {
                   </select>
                 </div>
               </div>
-              
+
               <div>
                 <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-2">
                   Specialization
@@ -640,7 +638,7 @@ export default function EventRegistrationPage() {
                 <Users className="w-5 h-5 text-[#FF5900]" />
                 Faculty Information
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="faNumber" className="block text-sm font-medium text-gray-700 mb-2">
@@ -657,7 +655,7 @@ export default function EventRegistrationPage() {
                     placeholder="Enter your FA number"
                   />
                 </div>
-                
+
                 <div>
                   <label htmlFor="facultyAdvisor" className="block text-sm font-medium text-gray-700 mb-2">
                     Faculty Advisor *

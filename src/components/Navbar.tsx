@@ -13,7 +13,6 @@ export default function Navbar() {
     try {
       await logout();
       toast.success("Logged out successfully");
-      // Redirect to login page after successful logout
       router.push("/login");
     } catch (error) {
       console.error("Logout failed:", error);
@@ -21,55 +20,77 @@ export default function Navbar() {
   };
 
   return (
-    <header className="w-full sticky top-0 z-50">
-      <div className="mx-auto max-w-7xl px-4 py-3">
-        <nav className="h-14 flex items-center justify-between rounded-2xl px-4 bg-[#FF5900] shadow-sm">
-          <Link href="/" className="text-xl font-bold text-black hover:text-white transition-colors">
-            ThriveUp
+    <header className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
+      <nav className="w-full max-w-5xl flex items-center justify-between px-6 py-4 rounded-full bg-black/60 backdrop-blur-xl border border-white/10 shadow-2xl ring-1 ring-white/5 transition-all duration-300 hover:bg-black/70">
+
+        {/* Left: Navigation */}
+        <div className="flex-1 flex items-center gap-6">
+          {profile?.role === 'organizer' ? (
+            <Link
+              href="/organizer/events"
+              className="text-sm font-bold text-white hover:text-brand transition-colors uppercase tracking-wider flex items-center gap-2"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <Link
+              href="/events"
+              className="text-sm font-medium text-gray-300 hover:text-brand transition-colors uppercase tracking-wider"
+            >
+              Explore
+            </Link>
+          )}
+        </div>
+
+        {/* Center: Brand */}
+        <div className="flex-0">
+          <Link href="/" className="group flex items-center gap-2">
+            <span className="text-2xl font-black tracking-tighter text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-brand group-hover:to-purple-500 transition-all duration-300">
+              ThriveUp
+            </span>
           </Link>
-          <div className="flex items-center gap-4 text-black">
-            {!user && (
-              <>
-                <Link
-                  href="/login"
-                  className="px-3 py-1.5 rounded-md bg-white text-black hover:opacity-90 transition-colors"
-                >
-                  Login
+        </div>
+
+        {/* Right: Auth / Profile */}
+        <div className="flex-1 flex items-center justify-end gap-4">
+          {!user ? (
+            <>
+              <Link
+                href="/login"
+                className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
+                className="px-5 py-2 rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]"
+              >
+                Sign Up
+              </Link>
+            </>
+          ) : (
+            <div className="flex items-center gap-4">
+              <Link href="/profile" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                Profile
+              </Link>
+
+              {profile?.role === "organizer" && (
+                <Link href="/organizer/new" className="hidden sm:block text-sm font-medium text-brand hover:text-brand-light transition-colors">
+                  + Create
                 </Link>
-                <Link
-                  href="/register"
-                  className="px-3 py-1.5 rounded-md border border-white text-white hover:bg-white hover:text-black transition-colors"
-                >
-                  Sign Up
-                </Link>
-              </>
-            )}
-            {user && (
-              <>
-                <Link href="/profile" className="hover:text-white transition-colors font-medium">
-                  Profile
-                </Link>
-                {profile?.role === "organizer" && (
-                  <>
-                    <Link href="/organizer/new" className="hover:text-white transition-colors font-medium">
-                      Create Event
-                    </Link>
-                    <Link href="/organizer/events" className="hover:text-white transition-colors font-medium">
-                      My Events
-                    </Link>
-                  </>
-                )}
-                <button
-                  onClick={handleLogout}
-                  className="px-3 py-1.5 rounded-md border border-white hover:bg-white hover:text-black text-white transition-colors"
-                >
-                  Logout
-                </button>
-              </>
-            )}
-          </div>
-        </nav>
-      </div>
+              )}
+
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 rounded-full border border-white/20 text-white text-xs font-semibold hover:bg-white hover:text-black transition-all"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+
+      </nav>
     </header>
   );
 }

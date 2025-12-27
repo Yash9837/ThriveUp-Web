@@ -26,6 +26,7 @@ export function LocationPicker({ latitude, longitude, onLocationChange }: Locati
     if (!latitude && !longitude) {
       onLocationChange(lat, lng);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency array - only run once on mount
 
   const handleManualInput = () => {

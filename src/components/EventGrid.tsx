@@ -5,15 +5,15 @@ export function EventGrid({ events }: { events: EventModel[] }) {
   if (events.length === 0) {
     return (
       <div className="text-center py-16">
-        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10">
           <span className="text-gray-400 text-2xl">📅</span>
         </div>
-        <p className="text-gray-900 text-lg mb-2">No events found</p>
-        <p className="text-gray-600">Check back later for upcoming events!</p>
+        <p className="text-white text-lg mb-2">No events found</p>
+        <p className="text-gray-500">Check back later for upcoming events!</p>
       </div>
     );
   }
-  
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
       {events.map((event) => (
