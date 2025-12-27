@@ -43,7 +43,7 @@ export function TagSelector({ selectedTags, onTagsChange, maxTags = 10 }: TagSel
 
   return (
     <div className="relative">
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <label className="block text-sm font-medium text-zinc-300 mb-2">
         Tags ({selectedTags.length}/{maxTags})
       </label>
 
@@ -52,13 +52,13 @@ export function TagSelector({ selectedTags, onTagsChange, maxTags = 10 }: TagSel
         {selectedTags.map((tag) => (
           <span
             key={tag}
-            className="inline-flex items-center gap-1 px-3 py-1 bg-[#FF5900] text-white text-sm rounded-full"
+            className="inline-flex items-center gap-1 px-3 py-1 bg-[#FF5900] text-white text-sm rounded-full bg-opacity-80"
           >
             {tag}
             <button
               type="button"
               onClick={() => removeTag(tag)}
-              className="ml-1 hover:bg-[#FF4400] rounded-full p-0.5 transition-colors"
+              className="ml-1 hover:bg-black/20 rounded-full p-0.5 transition-colors"
             >
               <X size={12} />
             </button>
@@ -71,9 +71,9 @@ export function TagSelector({ selectedTags, onTagsChange, maxTags = 10 }: TagSel
         <button
           type="button"
           onClick={toggleDropdown}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-left focus:ring-[#FF5900] focus:border-[#FF5900] flex items-center justify-between"
+          className="w-full px-3 py-2 border border-white/10 rounded-lg bg-zinc-900 text-white text-left focus:ring-[#FF5900] focus:border-[#FF5900] flex items-center justify-between hover:bg-zinc-800 transition-colors"
         >
-          <span className={selectedTags.length === 0 ? "text-gray-500" : ""}>
+          <span className={selectedTags.length === 0 ? "text-zinc-500" : ""}>
             {selectedTags.length === 0 ? "Select tags..." : `${selectedTags.length} tags selected`}
           </span>
           <svg
@@ -87,15 +87,15 @@ export function TagSelector({ selectedTags, onTagsChange, maxTags = 10 }: TagSel
         </button>
 
         {isOpen && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+          <div className="absolute z-10 w-full mt-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl max-h-60 overflow-auto">
             {/* Search Input */}
-            <div className="sticky top-0 bg-white border-b border-gray-200 p-2">
+            <div className="sticky top-0 bg-zinc-800 border-b border-zinc-700 p-2">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search tags..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-[#FF5900] focus:border-[#FF5900] text-sm"
+                className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-md focus:ring-[#FF5900] focus:border-[#FF5900] text-sm text-white placeholder-zinc-500"
                 autoFocus
               />
             </div>
@@ -103,7 +103,7 @@ export function TagSelector({ selectedTags, onTagsChange, maxTags = 10 }: TagSel
             {/* Tag Options */}
             <div className="py-1">
               {availableTags.length === 0 ? (
-                <div className="px-3 py-2 text-sm text-gray-500">
+                <div className="px-3 py-2 text-sm text-zinc-500">
                   {searchTerm ? "No tags found" : "All tags selected"}
                 </div>
               ) : (
@@ -112,7 +112,7 @@ export function TagSelector({ selectedTags, onTagsChange, maxTags = 10 }: TagSel
                     key={tag}
                     type="button"
                     onClick={() => addTag(tag)}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-100 flex items-center gap-2 text-sm"
+                    className="w-full text-left px-3 py-2 hover:bg-zinc-700 text-zinc-200 hover:text-white flex items-center gap-2 text-sm transition-colors"
                   >
                     <Check size={16} className="text-[#FF5900]" />
                     {tag}
@@ -125,7 +125,7 @@ export function TagSelector({ selectedTags, onTagsChange, maxTags = 10 }: TagSel
       </div>
 
       {/* Helper Text */}
-      <p className="text-xs text-gray-500 mt-1">
+      <p className="text-xs text-zinc-500 mt-1">
         Select up to {maxTags} tags that best describe your event. Tags help users discover your event.
       </p>
     </div>

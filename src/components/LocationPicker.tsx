@@ -76,23 +76,23 @@ export function LocationPicker({ latitude, longitude, onLocationChange }: Locati
         <button
           type="button"
           onClick={handleUseCurrentLocation}
-          className="px-3 py-2 bg-[#FF5900] text-white rounded-md hover:bg-[#FF4400] transition-colors"
+          className="px-4 py-2 bg-[#FF5900] text-white rounded-lg hover:bg-[#FF4400] transition-colors font-medium text-sm"
         >
           Use Current Location
         </button>
         <button
           type="button"
           onClick={handleManualInput}
-          className="px-3 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+          className="px-4 py-2 bg-zinc-800 text-zinc-200 rounded-lg hover:bg-zinc-700 transition-colors border border-white/10 text-sm font-medium"
         >
           Manual Input
         </button>
       </div>
 
       {isManual && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">
               Latitude
             </label>
             <input
@@ -100,12 +100,12 @@ export function LocationPicker({ latitude, longitude, onLocationChange }: Locati
               step="any"
               value={lat}
               onChange={handleLatChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-[#FF5900] focus:border-[#FF5900]"
+              className="w-full px-3 py-2 bg-zinc-900 border border-white/10 rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-brand/50 transition-colors"
               placeholder="e.g., 28.6139"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">
               Longitude
             </label>
             <input
@@ -113,21 +113,28 @@ export function LocationPicker({ latitude, longitude, onLocationChange }: Locati
               step="any"
               value={lng}
               onChange={handleLngChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-[#FF5900] focus:border-[#FF5900]"
+              className="w-full px-3 py-2 bg-zinc-900 border border-white/10 rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-brand/50 transition-colors"
               placeholder="e.g., 77.2090"
             />
           </div>
         </div>
       )}
 
-      <div className="bg-gray-100 p-4 rounded-md">
-        <p className="text-sm text-gray-600 mb-2">Selected Coordinates:</p>
-        <p className="font-mono text-sm">
-          {lat.toFixed(6)}, {lng.toFixed(6)}
-        </p>
-        <p className="text-xs text-gray-500 mt-1">
-          {isManual ? "Manual coordinates" : "Current location coordinates"}
-        </p>
+      <div className="bg-zinc-900/50 border border-white/5 p-4 rounded-xl flex items-center justify-between">
+        <div>
+          <p className="text-sm text-zinc-400 mb-1">Selected Coordinates:</p>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+            <p className="font-mono text-sm text-white">
+              {lat.toFixed(6)}, {lng.toFixed(6)}
+            </p>
+          </div>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-zinc-500 uppercase tracking-wider font-bold">
+            {isManual ? "Manual Mode" : "GPS Mode"}
+          </p>
+        </div>
       </div>
     </div>
   );

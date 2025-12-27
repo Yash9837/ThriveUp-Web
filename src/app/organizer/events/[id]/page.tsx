@@ -36,20 +36,50 @@ export default function OrganizerEventManagePage() {
 
         // Create CSV header
         // Flatten the object for CSV - taking profile into account if needed, or just raw data
-        const headers = ["Name", "Email", "Phone", "Role", "College", "Status"].join(",");
+        const headers = [
+            "Name",
+            "Registration No.",
+            "Email",
+            "Phone",
+            "Course",
+            "Department",
+            "Section",
+            "Year",
+            "Specialization",
+            "Faculty Advisor",
+            "FA Number",
+            "Status"
+        ].join(",");
 
         const rows = attendees.map(reg => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const name = reg.profile?.name || (reg as any)["Name"] || "Unknown";
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const email = reg.profile?.email || (reg as any)["Personal Email ID"] || "";
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const phone = (reg as any)["Contact Number"] || "";
-            const role = reg.profile?.role || "Student";
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const college = reg.profile?.college || (reg as any)["College Email ID"] || "";
+            const r = reg as any;
+            const name = r.profile?.name || r["Name"] || "Unknown";
+            const regNo = r["Registration No."] || "";
+            const email = r.profile?.email || r["Personal Email ID"] || r["College Email ID"] || "";
+            const phone = r["Contact Number"] || "";
+            const course = r["Course"] || "";
+            const dept = r["Department"] || "";
+            const section = r["Section"] || "";
+            const year = r["Year of Study"] || "";
+            const spec = r["Specialization"] || "";
+            const fa = r["Faculty Advisor"] || "";
+            const faNo = r["FA Number"] || "";
 
-            return [`"${name}"`, `"${email}"`, `"${phone}"`, `"${role}"`, `"${college}"`, '"Confirmed"'].join(",");
+            return [
+                `"${name}"`,
+                `"${regNo}"`,
+                `"${email}"`,
+                `"${phone}"`,
+                `"${course}"`,
+                `"${dept}"`,
+                `"${section}"`,
+                `"${year}"`,
+                `"${spec}"`,
+                `"${fa}"`,
+                `"${faNo}"`,
+                '"Confirmed"'
+            ].join(",");
         });
 
         const csvContent = [headers, ...rows].join("\n");
@@ -266,7 +296,7 @@ export default function OrganizerEventManagePage() {
                     {/* Attendee Profile Modal */}
                     {selectedAttendee && (
                         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setSelectedAttendee(null)}>
-                            <div className="bg-[#0E0E10] border border-white/10 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+                            <div className="bg-[#0E0E10] border border-white/10 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
 
                                 {/* Header bg */}
                                 <div className="h-32 bg-gradient-to-r from-brand/20 via-zinc-900 to-zinc-900 relative">
@@ -276,7 +306,7 @@ export default function OrganizerEventManagePage() {
                                     </button>
                                 </div>
 
-                                <div className="p-6 -mt-12 relative z-10">
+                                <div className="p-6 -mt-12 relative z-10 max-h-[80vh] overflow-y-auto">
                                     <div className="w-24 h-24 rounded-full border-4 border-[#0E0E10] bg-zinc-800 overflow-hidden shadow-xl mb-4">
                                         <img
                                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -291,32 +321,73 @@ export default function OrganizerEventManagePage() {
                                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                         {(selectedAttendee as any).profile?.name || (selectedAttendee as any)["Name"]}
                                     </h2>
-                                    <p className="text-brand text-sm font-medium mb-4">
+                                    <p className="text-zinc-300 text-sm font-medium mb-6">
                                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                                        {(selectedAttendee as any).profile?.role || "Attendee"}
+                                        {(selectedAttendee as any)["Registration No."] && <span className="text-brand font-mono mr-2">{(selectedAttendee as any)["Registration No."]}</span>}
+                                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                        <span className="opacity-70">{(selectedAttendee as any)["Course"]} / {(selectedAttendee as any)["Department"]}</span>
                                     </p>
 
-                                    <div className="space-y-4">
-                                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                                        {(selectedAttendee as any).profile?.bio && (
-                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                            <p className="text-zinc-400 text-sm italic">&quot;{(selectedAttendee as any).profile.bio}&quot;</p>
-                                        )}
-
-                                        <div className="space-y-3 pt-4 border-t border-white/5">
+                                    <div className="space-y-6">
+                                        {/* Contact Info */}
+                                        <div className="space-y-3 p-4 bg-zinc-900/50 rounded-xl border border-white/5">
+                                            <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Contact Details</h4>
                                             <div className="flex items-center gap-3 text-sm text-zinc-300">
                                                 <Mail className="w-4 h-4 text-zinc-600" />
-                                                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                                                {(selectedAttendee as any).profile?.email || (selectedAttendee as any)["Personal Email ID"]}
+                                                <div className="flex flex-col">
+                                                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                                    <span>{(selectedAttendee as any)["College Email ID"]}</span>
+                                                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                                    {(selectedAttendee as any)["Personal Email ID"] && <span className="text-xs text-zinc-500">{(selectedAttendee as any)["Personal Email ID"]} (Personal)</span>}
+                                                </div>
                                             </div>
                                             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                                            {((selectedAttendee as any).profile?.college || (selectedAttendee as any)["College Email ID"]) && (
+                                            {(selectedAttendee as any)["Contact Number"] && (
                                                 <div className="flex items-center gap-3 text-sm text-zinc-300">
-                                                    <MapPin className="w-4 h-4 text-zinc-600" />
+                                                    <span className="w-4 h-4 flex items-center justify-center font-bold text-zinc-600">#</span>
                                                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                                                    {(selectedAttendee as any).profile?.college || (selectedAttendee as any)["College"] || "College Info Unavailable"}
+                                                    {(selectedAttendee as any)["Contact Number"]}
                                                 </div>
                                             )}
+                                        </div>
+
+                                        {/* Academic Info */}
+                                        <div className="space-y-3 p-4 bg-zinc-900/50 rounded-xl border border-white/5">
+                                            <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Academic Details</h4>
+                                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                                <div>
+                                                    <p className="text-zinc-500 text-xs">Year</p>
+                                                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                                    <p className="text-white">{(selectedAttendee as any)["Year of Study"]}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-zinc-500 text-xs">Section</p>
+                                                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                                    <p className="text-white">{(selectedAttendee as any)["Section"]}</p>
+                                                </div>
+                                                <div className="col-span-2">
+                                                    <p className="text-zinc-500 text-xs">Specialization</p>
+                                                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                                    <p className="text-white">{(selectedAttendee as any)["Specialization"] || "N/A"}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Faculty Info */}
+                                        <div className="space-y-3 p-4 bg-zinc-900/50 rounded-xl border border-white/5">
+                                            <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Faculty Advisor</h4>
+                                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                                <div>
+                                                    <p className="text-zinc-500 text-xs">Advisor Name</p>
+                                                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                                    <p className="text-white">{(selectedAttendee as any)["Faculty Advisor"]}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-zinc-500 text-xs">FA Number</p>
+                                                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                                    <p className="text-white">{(selectedAttendee as any)["FA Number"]}</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

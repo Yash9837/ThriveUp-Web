@@ -62,18 +62,18 @@ export default function CreateEventPage() {
   const onSubmit = async (values: FormValues) => {
     try {
       console.log("=== FORM SUBMISSION START ===");
-      
+
       // Check if profile exists
       if (!profile) {
         toast.error("Please log in to create an event");
         return;
       }
-      
+
       if (!profile.uid) {
         toast.error("User ID not found. Please log in again.");
         return;
       }
-      
+
       if (selectedTags.length === 0) {
         toast.error("Please select at least one tag");
         return;
@@ -91,9 +91,9 @@ export default function CreateEventPage() {
         month: 'short',
         year: 'numeric'
       });
-      
+
       const formattedTime = values.time;
-      
+
       console.log("Form values:", values);
       console.log("Formatted date:", formattedDate);
       console.log("Selected tags:", selectedTags);
@@ -102,18 +102,18 @@ export default function CreateEventPage() {
       console.log("Latitude:", latitude);
       console.log("Longitude:", longitude);
       console.log("Poster file:", posterFile);
-      
+
       // Validate location coordinates
       if (latitude === undefined || longitude === undefined) {
         console.log("Location coordinates not set, using default values");
       }
-      
+
       // Ensure coordinates are valid numbers
       const validLatitude = typeof latitude === 'number' && !isNaN(latitude) ? latitude : undefined;
       const validLongitude = typeof longitude === 'number' && !isNaN(longitude) ? longitude : undefined;
-      
+
       console.log("Valid coordinates:", { latitude: validLatitude, longitude: validLongitude });
-      
+
       const eventPayload = {
         title: values.title,
         category: values.category,
@@ -130,17 +130,17 @@ export default function CreateEventPage() {
         organizerUid: profile?.uid ?? "",
         posterFile,
         status: "pending",
-        ...(validLatitude !== undefined && validLongitude !== undefined && { 
-          latitude: validLatitude, 
-          longitude: validLongitude 
+        ...(validLatitude !== undefined && validLongitude !== undefined && {
+          latitude: validLatitude,
+          longitude: validLongitude
         }),
       };
-      
+
       console.log("Event payload:", eventPayload);
       console.log("=== CALLING CREATE EVENT ===");
-      
+
       await create.mutateAsync(eventPayload);
-      
+
       console.log("=== EVENT CREATED SUCCESSFULLY ===");
       toast.success("Event created successfully!");
       window.location.href = "/organizer/events";
@@ -156,164 +156,194 @@ export default function CreateEventPage() {
   return (
     <RoleGate role="organizer">
       <Navbar />
-      <main className="mx-auto max-w-4xl px-4 py-6">
-        <h1 className="text-3xl font-bold mb-6 text-gray-900">Create New Event</h1>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Basic Information */}
-          <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900">Basic Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Event Title *</label>
-                <input 
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#FF5900] focus:border-[#FF5900]" 
-                  placeholder="Enter event title"
-                  {...register("title")} 
-                />
-                {errors.title && <p className="text-sm text-red-600 mt-1">{errors.title.message}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
-                <select 
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#FF5900] focus:border-[#FF5900]"
-                  {...register("category")}
-                >
-                  <option value="">Select a category</option>
-                  {EVENT_CATEGORIES.map((category) => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
-                {errors.category && <p className="text-sm text-red-600 mt-1">{errors.category.message}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Expected Attendance *</label>
-                <input 
-                  type="number" 
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#FF5900] focus:border-[#FF5900]" 
-                  placeholder="500"
-                  {...register("attendanceCount", { valueAsNumber: true })} 
-                />
-                {errors.attendanceCount && <p className="text-sm text-red-600 mt-1">{errors.attendanceCount.message}</p>}
-              </div>
-            </div>
+      <div className="min-h-screen bg-[#0E0E10] text-zinc-100 font-sans selection:bg-brand/30 selection:text-brand-100">
+        <Navbar />
+
+        {/* Global Background Noise/Gradient */}
+        <div className="fixed inset-0 pointer-events-none opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
+
+        <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
+          <div className="mb-10">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-2">
+              Create New Event
+            </h1>
+            <p className="text-zinc-400">Fill in the details to launch your event.</p>
           </div>
 
-          {/* Date and Time */}
-          <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900">Date and Time</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Event Date *</label>
-                <input 
-                  type="date" 
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#FF5900] focus:border-[#FF5900]" 
-                  {...register("date")} 
-                />
-                {errors.date && <p className="text-sm text-red-600 mt-1">{errors.date.message}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Event Time *</label>
-                <input 
-                  type="time" 
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#FF5900] focus:border-[#FF5900]" 
-                  {...register("time")} 
-                />
-                {errors.time && <p className="text-sm text-red-600 mt-1">{errors.time.message}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Registration Deadline *</label>
-                <input 
-                  type="date" 
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#FF5900] focus:border-[#FF5900]" 
-                  {...register("deadlineDate")} 
-                />
-                {errors.deadlineDate && <p className="text-sm text-red-600 mt-1">{errors.deadlineDate.message}</p>}
-              </div>
-            </div>
-          </div>
-
-          {/* Location */}
-          <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900">Location</h2>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            {/* Basic Information */}
+            <div className="bg-zinc-900/50 backdrop-blur-sm p-6 sm:p-8 rounded-2xl border border-white/5 space-y-6">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <span className="text-brand">✨</span> Basic Information
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Location *</label>
-                  <input 
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#FF5900] focus:border-[#FF5900]" 
-                    placeholder="e.g., Online, Conference Center, University Campus"
-                    {...register("location")} 
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Event Title</label>
+                  <input
+                    className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white placeholder-zinc-600 focus:outline-none focus:border-brand/50 transition-colors"
+                    placeholder="e.g. Tech Summit 2025"
+                    {...register("title")}
                   />
-                  {errors.location && <p className="text-sm text-red-600 mt-1">{errors.location.message}</p>}
+                  {errors.title && <p className="text-sm text-red-500 mt-1">{errors.title.message}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Location Details *</label>
-                  <input 
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#FF5900] focus:border-[#FF5900]" 
-                    placeholder="e.g., Room 101, Online meeting link, etc."
-                    {...register("locationDetails")} 
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Category</label>
+                  <select
+                    className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-brand/50 transition-colors appearance-none"
+                    {...register("category")}
+                  >
+                    <option value="" className="bg-zinc-900 text-zinc-500">Select a category</option>
+                    {EVENT_CATEGORIES.map((category) => (
+                      <option key={category} value={category} className="bg-zinc-900">{category}</option>
+                    ))}
+                  </select>
+                  {errors.category && <p className="text-sm text-red-500 mt-1">{errors.category.message}</p>}
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Expected Attendance</label>
+                  <input
+                    type="number"
+                    className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white placeholder-zinc-600 focus:outline-none focus:border-brand/50 transition-colors"
+                    placeholder="500"
+                    {...register("attendanceCount", { valueAsNumber: true })}
                   />
-                  {errors.locationDetails && <p className="text-sm text-red-600 mt-1">{errors.locationDetails.message}</p>}
+                  {errors.attendanceCount && <p className="text-sm text-red-500 mt-1">{errors.attendanceCount.message}</p>}
                 </div>
               </div>
-              <LocationPicker 
-                latitude={latitude} 
-                longitude={longitude} 
-                onLocationChange={handleLocationChange} 
+            </div>
+
+            {/* Date and Time */}
+            <div className="bg-zinc-900/50 backdrop-blur-sm p-6 sm:p-8 rounded-2xl border border-white/5 space-y-6">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <span className="text-brand">📅</span> Date and Time
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Event Date</label>
+                  <input
+                    type="date"
+                    className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-brand/50 transition-colors [color-scheme:dark]"
+                    {...register("date")}
+                  />
+                  {errors.date && <p className="text-sm text-red-500 mt-1">{errors.date.message}</p>}
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Event Time</label>
+                  <input
+                    type="time"
+                    className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-brand/50 transition-colors [color-scheme:dark]"
+                    {...register("time")}
+                  />
+                  {errors.time && <p className="text-sm text-red-500 mt-1">{errors.time.message}</p>}
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Registration Deadline</label>
+                  <input
+                    type="date"
+                    className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-brand/50 transition-colors [color-scheme:dark]"
+                    {...register("deadlineDate")}
+                  />
+                  {errors.deadlineDate && <p className="text-sm text-red-500 mt-1">{errors.deadlineDate.message}</p>}
+                </div>
+              </div>
+            </div>
+
+            {/* Location */}
+            <div className="bg-zinc-900/50 backdrop-blur-sm p-6 sm:p-8 rounded-2xl border border-white/5 space-y-6">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <span className="text-brand">📍</span> Location
+              </h2>
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Venue</label>
+                    <input
+                      className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white placeholder-zinc-600 focus:outline-none focus:border-brand/50 transition-colors"
+                      placeholder="e.g., Online, Conference Center"
+                      {...register("location")}
+                    />
+                    {errors.location && <p className="text-sm text-red-500 mt-1">{errors.location.message}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Details / Room</label>
+                    <input
+                      className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white placeholder-zinc-600 focus:outline-none focus:border-brand/50 transition-colors"
+                      placeholder="e.g., Room 101, Zoom Link"
+                      {...register("locationDetails")}
+                    />
+                    {errors.locationDetails && <p className="text-sm text-red-500 mt-1">{errors.locationDetails.message}</p>}
+                  </div>
+                </div>
+                <LocationPicker
+                  latitude={latitude}
+                  longitude={longitude}
+                  onLocationChange={handleLocationChange}
+                />
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="bg-zinc-900/50 backdrop-blur-sm p-6 sm:p-8 rounded-2xl border border-white/5 space-y-6">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <span className="text-brand">📝</span> Event Description
+              </h2>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Description</label>
+                <textarea
+                  className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white placeholder-zinc-600 focus:outline-none focus:border-brand/50 transition-colors"
+                  rows={6}
+                  placeholder="Tell us everything about the event..."
+                  {...register("description")}
+                />
+                {errors.description && <p className="text-sm text-red-500 mt-1">{errors.description.message}</p>}
+              </div>
+            </div>
+
+            {/* Tags */}
+            <div className="bg-zinc-900/50 backdrop-blur-sm p-6 sm:p-8 rounded-2xl border border-white/5 space-y-6">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <span className="text-brand">🏷️</span> Tags
+              </h2>
+              <TagSelector
+                selectedTags={selectedTags}
+                onTagsChange={setSelectedTags}
+                maxTags={15}
               />
             </div>
-          </div>
 
-          {/* Description */}
-          <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900">Event Description</h2>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
-              <textarea 
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#FF5900] focus:border-[#FF5900]" 
-                rows={6} 
-                placeholder="Describe your event in detail..."
-                {...register("description")} 
+            {/* Speakers */}
+            <div className="bg-zinc-900/50 backdrop-blur-sm p-6 sm:p-8 rounded-2xl border border-white/5 space-y-6">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <span className="text-brand">🎤</span> Speakers
+              </h2>
+              <SpeakerManager
+                speakers={speakers}
+                onSpeakersChange={setSpeakers}
               />
-              {errors.description && <p className="text-sm text-red-600 mt-1">{errors.description.message}</p>}
             </div>
-          </div>
 
-          {/* Tags */}
-          <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <TagSelector 
-              selectedTags={selectedTags} 
-              onTagsChange={setSelectedTags} 
-              maxTags={15}
-            />
-          </div>
+            {/* Poster */}
+            <div className="bg-zinc-900/50 backdrop-blur-sm p-6 sm:p-8 rounded-2xl border border-white/5 space-y-6">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <span className="text-brand">🖼️</span> Event Poster
+              </h2>
+              <PosterUpload onFile={setPosterFile} />
+            </div>
 
-          {/* Speakers */}
-          <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <SpeakerManager 
-              speakers={speakers} 
-              onSpeakersChange={setSpeakers} 
-            />
-          </div>
-
-          {/* Poster */}
-          <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900">Event Poster</h2>
-            <PosterUpload onFile={setPosterFile} />
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="px-8 py-3 rounded-md bg-[#FF5900] text-white font-medium hover:bg-[#FF4400] disabled:opacity-60 transition-colors"
-              disabled={create.isPending}
-            >
-              {create.isPending ? "Creating Event..." : "Create Event"}
-            </button>
-          </div>
-        </form>
-      </main>
+            {/* Submit Button */}
+            <div className="flex justify-end pt-6">
+              <button
+                type="submit"
+                className="px-8 py-4 rounded-xl bg-brand text-white font-bold text-lg hover:bg-orange-600 disabled:opacity-60 transition-all shadow-lg shadow-brand/20 flex items-center gap-2 group"
+                disabled={create.isPending}
+              >
+                {create.isPending ? "Launching Event..." : "Launch Event"}
+                {!create.isPending && <span className="group-hover:translate-x-1 transition-transform">🚀</span>}
+              </button>
+            </div>
+          </form>
+        </main>
+      </div>
     </RoleGate>
   );
 }

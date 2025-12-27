@@ -218,7 +218,7 @@ export default function EventDetailsPage() {
                   <Info className="w-5 h-5 text-brand" /> About Event
                 </h3>
                 <div className="prose prose-invert prose-zinc max-w-none prose-lg leading-relaxed">
-                  <p>{event.description || "No specific details provided for this event."}</p>
+                  <p className="whitespace-pre-wrap">{event.description || "No specific details provided for this event."}</p>
                 </div>
 
                 {/* Tags Pill Cloud */}
@@ -313,15 +313,30 @@ export default function EventDetailsPage() {
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand via-orange-500 to-brand" />
 
                   <div className="space-y-6">
-                    <div>
-                      <p className="text-zinc-400 text-xs font-bold uppercase tracking-wider mb-2">Event Schedule</p>
-                      <div className="flex items-center gap-3 text-zinc-100 mb-2">
-                        <Clock className="w-5 h-5 text-brand" />
-                        <span className="font-semibold text-lg">{formatTime(event.time)}</span>
+                    <div className="space-y-6">
+                      <div>
+                        <p className="text-zinc-400 text-xs font-bold uppercase tracking-wider mb-2">Date & Time</p>
+                        <div className="flex items-center gap-3 text-zinc-100 mb-2">
+                          <Clock className="w-5 h-5 text-brand" />
+                          <span className="font-semibold text-lg">{formatTime(event.time)}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-zinc-100">
+                          <Calendar className="w-5 h-5 text-brand" />
+                          <span className="font-medium">{dateObj.full}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-3 text-zinc-100">
-                        <Calendar className="w-5 h-5 text-brand" />
-                        <span className="font-medium">{dateObj.full}</span>
+
+                      <div>
+                        <p className="text-zinc-400 text-xs font-bold uppercase tracking-wider mb-2">Location</p>
+                        <div className="flex items-start gap-3 text-zinc-100">
+                          <MapPin className="w-5 h-5 text-brand shrink-0 mt-0.5" />
+                          <div>
+                            <span className="font-medium block">{event.location}</span>
+                            {event.locationDetails && (
+                              <span className="text-zinc-400 text-sm block mt-0.5">{event.locationDetails}</span>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
 

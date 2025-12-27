@@ -20,11 +20,19 @@ export function PosterUpload({ onFile }: { onFile: (file: File | null) => void }
             setPreview(null);
           }
         }}
-        className="block w-full text-sm"
+        className="block w-full text-sm text-zinc-400
+          file:mr-4 file:py-2.5 file:px-5
+          file:rounded-lg file:border-0
+          file:text-sm file:font-semibold
+          file:bg-[#FF5900] file:text-white
+          hover:file:bg-[#FF4400]
+          cursor-pointer file:transition-colors"
       />
       {preview && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={preview} alt="Preview" className="mt-2 h-40 rounded border object-cover" />
+        <div className="mt-6 w-48 h-64 rounded-xl border-2 border-dashed border-white/20 overflow-hidden relative shadow-2xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+        </div>
       )}
     </div>
   );
