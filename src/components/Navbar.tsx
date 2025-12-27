@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -45,6 +46,15 @@ export default function Navbar() {
         {/* Center: Brand */}
         <div className="flex-0">
           <Link href="/" className="group flex items-center gap-2">
+            <div className="relative w-10 h-10 rounded-full overflow-hidden group-hover:scale-110 transition-transform duration-300">
+              <Image
+                src="/logo.png"
+                alt="ThriveUp Logo"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
             <span className="text-2xl font-black tracking-tighter text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-brand group-hover:to-purple-500 transition-all duration-300">
               ThriveUp
             </span>
