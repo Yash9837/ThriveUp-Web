@@ -44,6 +44,7 @@ export interface UserProfile {
   techStack?: string | string[] | null;
   college?: string;
   updatedAt?: Timestamp;                         // Firestore Timestamp
+  personalEmail?: string;
   isApproved?: boolean;
 }
 

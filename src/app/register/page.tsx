@@ -16,6 +16,7 @@ interface RegistrationFormData {
   // Step 1
   name: string;
   email: string;
+  personalEmail: string;
   password: string;
   confirmPassword: string;
   agreedToTerms: boolean;
@@ -40,6 +41,7 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState<RegistrationFormData>({
     name: "",
     email: "",
+    personalEmail: "",
     password: "",
     confirmPassword: "",
     agreedToTerms: false,
@@ -261,6 +263,7 @@ export default function RegisterPage() {
         university: formData.university,
         collegeId: finalCollegeCode, // e.g. "srmist"
         collegeEmail: formData.email,
+        personalEmail: formData.personalEmail,
 
         // Profile
         profileImageURL: profileImageUrl,
@@ -374,6 +377,21 @@ export default function RegisterPage() {
                         />
                         {isEmailVerified && <Check className="absolute right-3 top-3 text-green-500" size={18} />}
                       </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Personal Email</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 text-zinc-500" size={18} />
+                      <input
+                        name="personalEmail"
+                        type="email"
+                        value={formData.personalEmail}
+                        onChange={handleInputChange}
+                        className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-white focus:border-[#FF5900] focus:outline-none transition-colors"
+                        placeholder="john@gmail.com"
+                      />
                     </div>
                   </div>
                 </div>
